@@ -121,10 +121,22 @@ exports.Prisma.PatientScalarFieldEnum = {
   id: 'id',
   name: 'name',
   phone: 'phone',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.AppointmentsScalarFieldEnum = {
+  id: 'id',
+  patientId: 'patientId',
   service: 'service',
   price: 'price',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
+};
+
+exports.Prisma.ServicesScalarFieldEnum = {
+  id: 'id',
+  service: 'service'
 };
 
 exports.Prisma.SortOrder = {
@@ -139,7 +151,9 @@ exports.Prisma.QueryMode = {
 
 
 exports.Prisma.ModelName = {
-  Patient: 'Patient'
+  Patient: 'Patient',
+  Appointments: 'Appointments',
+  Services: 'Services'
 };
 
 /**
