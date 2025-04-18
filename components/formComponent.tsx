@@ -10,6 +10,7 @@ import axios from "axios"
 import { toast } from "sonner"
 import { ArrowLeft } from "lucide-react"
 import { useRouter } from "next/navigation"
+import { Patient } from "@/src/app/generated/prisma/client"
 
 export default function PatientForm() {
   const router = useRouter();
@@ -44,11 +45,48 @@ export default function PatientForm() {
     }
   }
 
-  const generateInvoice = () => {
+  const generateInvoice = async() => {
     console.log("Generating invoice for:", formData)
+    const response = await axios.post("/api/invoice/generate", formData)
+
+    try {
+      const response = await axios.post('/api/invoice/generate', {
+          patientName: formData.name,
+          patientPhone: formData.phoneNumber,
+          appointmentId: formData.name,
+          service: formData.service,
+          amount: formData.cost,
+          date: new Date().toLocaleDateString('en-IN', {
+              day: '2-digit',
+              month: '2-digit',
+              year: 'numeric'
+          })
+      }, {
+          responseType: 'blob',
+          headers: {
+              'Content-Type': 'application/json'
+          }
+      })
+
+      // Create blob and download
+      const blob = new Blob([response.data], { type: 'application/pdf' })
+      const url = window.URL.createObjectURL(blob)
+      const link = document.createElement('a')
+      link.href = url
+      link.download = `invoice-${formData.service}.pdf`
+      document.body.appendChild(link)
+      link.click()
+      document.body.removeChild(link)
+      window.URL.revokeObjectURL(url)
+
+      toast.success('Invoice downloaded successfully!')
+  } catch (error) {
+      console.error('Invoice generation error:', error)
+      toast.error('Failed to generate invoice')
+  }
+    console.log(response)
   }
 
- 
 
 
   return (
@@ -164,11 +202,18 @@ export default function PatientForm() {
                         <SelectValue placeholder="Select Service" />
                       </SelectTrigger>
                       <SelectContent className="max-h-[300px]">
-                        <SelectItem value="consultation">General Consultation</SelectItem>
-                        <SelectItem value="checkup">Regular Check-up</SelectItem>
-                        <SelectItem value="treatment">Treatment</SelectItem>
-                        <SelectItem value="procedure">Medical Procedure</SelectItem>
-                        <SelectItem value="therapy">Therapy Session</SelectItem>
+                        <SelectItem value="consultation">Dental Consultation</SelectItem>
+                        <SelectItem value="cleaning">Teeth Cleaning</SelectItem>
+                        <SelectItem value="filling">Dental Filling</SelectItem>
+                        <SelectItem value="extraction">Tooth Extraction</SelectItem>
+                        <SelectItem value="rootcanal">Root Canal Treatment</SelectItem>
+                        <SelectItem value="crown">Dental Crown</SelectItem>
+                        <SelectItem value="bridge">Dental Bridge</SelectItem>
+                        <SelectItem value="implant">Dental Implant</SelectItem>
+                        <SelectItem value="dentures">Dentures</SelectItem>
+                        <SelectItem value="whitening">Teeth Whitening</SelectItem>
+                        <SelectItem value="braces">Dental Braces</SelectItem>
+                        <SelectItem value="xray">Dental X-Ray</SelectItem>
                       </SelectContent>
                     </Select>
 
@@ -194,7 +239,7 @@ export default function PatientForm() {
 
                 {/* Action Buttons */}
                 <div className="flex flex-col-reverse sm:flex-row justify-end gap-2 pt-4 border-t border-border/10">
-                  <Button 
+                  {/* <Button 
                     type="button"
                     variant="outline" 
                     className="h-10 w-full sm:w-auto"
@@ -202,7 +247,7 @@ export default function PatientForm() {
                     disabled={isSubmitting}
                   >
                     Generate Invoice
-                  </Button>
+                  </Button> */}
                   <Button 
                     type="submit"
                     className="bg-primary hover:bg-primary/90 text-primary-foreground h-10 w-full sm:w-auto"

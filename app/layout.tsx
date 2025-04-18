@@ -14,6 +14,9 @@ const outfit = Outfit({
 export const metadata: Metadata = {
   title: "Nivass Dental Clinic",
   description: "Nivass Dental Clinic",
+  icons: {
+    icon: "/dental-care.png",
+  },
 };
 
 export default function RootLayout({
